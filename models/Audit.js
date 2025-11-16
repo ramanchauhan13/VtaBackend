@@ -6,7 +6,7 @@ const AuditLogSchema = new Schema({
   targetType: String,
   targetId: Types.ObjectId,
   details: Schema.Types.Mixed,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const AuditLog = model("AuditLog", AuditLogSchema);

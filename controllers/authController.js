@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { logAudit } from "../utils/auditLogger.js";
 import { sendEmail } from "../utils/email.js";
+import { createNotification } from "../utils/createNotification.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "SUPER_SECRET";
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES = "7d";
 
 // Create JWT
@@ -12,14 +13,16 @@ const signToken = (payload) =>
   jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
 
 // ---------------- REGISTER ----------------
-export const register = async (req, res, next) => {
+export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone } = req.body;
+    const { firstName, lastName, email, password, phone, role } = req.body;
 
-    if (!email || !password)
-      return res
-        .status(400)
-        .json({ success: false, message: "Email and Password required" });
+    if (!email || !password || !firstName || !lastName || !phone)
+      return res.status(400).json({
+        success: false,
+        message:
+          "Email, Password, First Name, Last Name, and Phone are required",
+      });
 
     const exists = await User.findOne({ email });
     if (exists)
@@ -27,8 +30,22 @@ export const register = async (req, res, next) => {
         .status(409)
         .json({ success: false, message: "Email already used" });
 
-    const user = new User({ firstName, lastName, email, password, phone });
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      role,
+    });
     await user.save();
+
+    await createNotification(
+      user._id,
+      "Welcome!",
+      "In-App",
+      "Your account has been created successfully."
+    );
 
     await sendEmail({
       to: email,
@@ -43,26 +60,30 @@ export const register = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: {
-        user: { id: user._id, firstName, lastName, email, role: user.role },
+        user,
         token,
       },
     });
   } catch (err) {
-    next(err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: err.message });
   }
 };
 
 // ---------------- LOGIN ----------------
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { loguser, password } = req.body;
 
-    if (!email || !password)
+    if (!loguser || !password)
       return res
         .status(400)
         .json({ success: false, message: "Missing credentials" });
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [{ email: loguser }, { phone: loguser }],
+    });
     if (!user)
       return res.status(401).json({ success: false, message: "Invalid login" });
 

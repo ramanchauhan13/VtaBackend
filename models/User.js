@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
-    phone: { type: String, trim: true },
+    phone: { type: String, trim: true, unique: true, required: true },
 
     role: {
       type: String,
