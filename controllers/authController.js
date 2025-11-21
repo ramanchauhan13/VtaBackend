@@ -74,15 +74,15 @@ export const register = async (req, res) => {
 // ---------------- LOGIN ----------------
 export const login = async (req, res, next) => {
   try {
-    const { loguser, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!loguser || !password)
+    if (!username || !password)
       return res
         .status(400)
         .json({ success: false, message: "Missing credentials" });
 
     const user = await User.findOne({
-      $or: [{ email: loguser }, { phone: loguser }],
+      $or: [{ email: username }, { phone: username }],
     });
     if (!user)
       return res.status(401).json({ success: false, message: "Invalid login" });
