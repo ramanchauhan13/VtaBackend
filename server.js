@@ -1,11 +1,13 @@
-import 'dotenv/config';   // <-- MUST be FIRST
-import express from 'express';
-import connectDB from './config/db.js';
-import cors from 'cors';
+import "dotenv/config"; // <-- MUST be FIRST
+import express from "express";
+import connectDB from "./config/db.js";
+import cors from "cors";
 // import './utils/cron.js';
 
 // Route Imports
-import authRoutes from './routes/authRoutes.js';
+import authRoutes from "./routes/authRoutes.js";
+import serviceRoutes from "./routes/serviceRoutes.js";
+import requestRoutes from "./routes//requestRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -13,27 +15,27 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
-
-connectDB().then(() => {
+connectDB()
+  .then(() => {
     app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+      console.log(`Server is running on port ${PORT}`);
     });
-}).catch((error) => {
-    console.error('Error connecting to the database:', error);
+  })
+  .catch((error) => {
+    console.error("Error connecting to the database:", error);
     process.exit(1);
-});
+  });
 
 // Default Route
-app.get('/', (req, res) => {
-    res.send('Hello From Server');
+app.get("/", (req, res) => {
+  res.send("Hello From Server");
 });
 
 // Route Usage
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/requests", requestRoutes);
 
 app.use((req, res, next) => {
-    res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ message: "Route not found" });
 });
-
-
-
