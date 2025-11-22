@@ -66,9 +66,11 @@ export const createService = async (req, res) => {
 
 // Get all active services
 export const getAllServices = async (req, res) => {
+  console.log("Fetching all services");
   try {
     const services = await Service.find({ isActive: true });
     res.status(200).json({ success: true, data: services });
+    console.log(services);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -127,23 +129,30 @@ export const deleteService = async (req, res) => {
   }
 };
 
-// Deactivate service by ID
-export const deactivateService = async (req, res) => {
+export const toggleServiceStatus = async (req, res) => {
   try {
-    const deactivatedService = await Service.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
+    // Find service first
+    const service = await Service.findById(req.params.id);
 
-    if (!deactivatedService) {
+    if (!service) {
       return res
         .status(404)
         .json({ success: false, message: "Service not found" });
     }
 
-    res.status(200).json({ success: true, data: deactivatedService });
+    // Toggle status
+    service.isActive = !service.isActive;
+
+    // Save updated document
+    await service.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Service ${service.isActive ? "activated" : "deactivated"}`,
+      data: service,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+

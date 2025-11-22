@@ -4,17 +4,17 @@ import {
   getServiceById,
   updateService,
   deleteService,
-  deactivateService,
+  toggleServiceStatus,
 } from "../controllers/serviceController.js";
 
 import express from "express";
 const router = express.Router();
 
-router.post("/", createService);
-router.get("/", getAllServices);
-router.get("/:id", getServiceById);
-router.put("/:id", updateService);
-router.delete("/:id", deleteService);
-router.patch("/:id/deactivate", deactivateService);
+router.post("/create-service", createService);
+router.get("/get-services", getAllServices);
+router.get("/get-service/:id", getServiceById);
+router.put("/update-service/:id", updateService);
+router.delete("/delete-service/:id", deleteService);
+router.patch("/toggle-status/:id", toggleServiceStatus);
 
 export default router;
