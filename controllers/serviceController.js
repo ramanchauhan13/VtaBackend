@@ -3,8 +3,13 @@ import Service from "../models/Service.js";
 // Create a new service
 export const createService = async (req, res) => {
   try {
-    const { name, description, requiredDocuments, estimatedProcessingDays } =
-      req.body;
+    const {
+      name,
+      description,
+      requiredDocuments,
+      estimatedProcessingDays,
+      formFields
+    } = req.body;
 
     // Basic Validation
     if (!name || !description) {
@@ -14,7 +19,7 @@ export const createService = async (req, res) => {
       });
     }
 
-    // Check duplicate service
+    // Check duplicate
     const exists = await Service.findOne({ name: name.trim() });
     if (exists) {
       return res.status(409).json({
@@ -23,7 +28,7 @@ export const createService = async (req, res) => {
       });
     }
 
-    // Validate requiredDocuments (must be an array)
+    // Validate requiredDocuments
     if (requiredDocuments && !Array.isArray(requiredDocuments)) {
       return res.status(400).json({
         success: false,
@@ -42,21 +47,32 @@ export const createService = async (req, res) => {
       });
     }
 
+    // Validate formFields
+    if (formFields && !Array.isArray(formFields)) {
+      return res.status(400).json({
+        success: false,
+        message: "formFields must be an array",
+      });
+    }
+
     const newService = new Service({
       name: name.trim(),
       description,
-      requiredDocuments,
-      estimatedProcessingDays,
+      requiredDocuments: requiredDocuments || [],
+      estimatedProcessingDays: estimatedProcessingDays || 0,
+      formFields: formFields || []
     });
 
     const savedService = await newService.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
+      message: "Service created successfully",
       data: savedService,
     });
+
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server Error",
       error: error.message,

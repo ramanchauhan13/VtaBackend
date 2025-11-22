@@ -11,6 +11,17 @@ const serviceSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Service description is required'],
   },
+
+    formFields: [
+    {
+      label: String,     // shown on UI
+      name: String,      // used as key in formData
+      type: String,      // text | number | date | select | file
+      required: Boolean,
+      options: [String], // optional
+    }
+  ],
+  
   // List of document names the user needs to upload
   requiredDocuments: {
     type: [String],
