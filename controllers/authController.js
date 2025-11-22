@@ -59,10 +59,8 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      data: {
-        user,
-        token,
-      },
+      user,
+      token,
     });
   } catch (err) {
     res
