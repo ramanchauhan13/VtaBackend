@@ -84,20 +84,12 @@ export const getRequestById = async (req, res) => {
 // --------------------------------------------------
 export const getAllRequests = async (req, res) => {
   try {
-    const { status, priority, serviceId, userId } = req.query;
-
-    const filter = {};
-
-    if (status) filter.status = status;
-    if (priority) filter.priority = priority;
-    if (serviceId) filter.service = serviceId;
-    if (userId) filter.user = userId;
-
-    const requests = await Request.find(filter)
-      .populate("user", "name email role")
-      .populate("service", "name")
-      .sort({ createdAt: -1 })
+    const requests = await Request.find()
+      .populate("user", "firstName lastName email phone")
+      .populate("service", "name description")
       .lean();
+
+    console.log("Fetched Requests:", requests);
 
     return res.status(200).json({
       success: true,
