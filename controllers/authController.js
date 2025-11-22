@@ -98,13 +98,7 @@ export const login = async (req, res, next) => {
       success: true,
       data: {
         token,
-        user: {
-          id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          role: user.role,
-        },
+        user,
       },
     });
     console.log("Login successful for user:", user._id);
