@@ -68,7 +68,7 @@ export const createService = async (req, res) => {
 export const getAllServices = async (req, res) => {
   console.log("Fetching all services");
   try {
-    const services = await Service.find({ isActive: true });
+    const services = await Service.find();
     res.status(200).json({ success: true, data: services });
     console.log(services);
   } catch (error) {
@@ -155,4 +155,3 @@ export const toggleServiceStatus = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
