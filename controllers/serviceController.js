@@ -8,8 +8,10 @@ export const createService = async (req, res) => {
       description,
       requiredDocuments,
       estimatedProcessingDays,
-      formFields
+      formFields,
     } = req.body;
+
+    console.log("Creating service with data:", req.body);
 
     // Basic Validation
     if (!name || !description) {
@@ -60,7 +62,7 @@ export const createService = async (req, res) => {
       description,
       requiredDocuments: requiredDocuments || [],
       estimatedProcessingDays: estimatedProcessingDays || 0,
-      formFields: formFields || []
+      formFields: formFields || [],
     });
 
     const savedService = await newService.save();
@@ -70,7 +72,6 @@ export const createService = async (req, res) => {
       message: "Service created successfully",
       data: savedService,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,

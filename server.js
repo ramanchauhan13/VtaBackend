@@ -10,7 +10,7 @@ import serviceRoutes from "./routes/serviceRoutes.js";
 import requestRoutes from "./routes//requestRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
