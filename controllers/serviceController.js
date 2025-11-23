@@ -82,11 +82,9 @@ export const createService = async (req, res) => {
 
 // Get all active services
 export const getAllServices = async (req, res) => {
-  console.log("Fetching all services");
   try {
     const services = await Service.find();
     res.status(200).json({ success: true, data: services });
-    console.log(services);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -89,8 +89,6 @@ export const getAllRequests = async (req, res) => {
       .populate("service", "name description")
       .lean();
 
-    console.log("Fetched Requests:", requests);
-
     return res.status(200).json({
       success: true,
       count: requests.length,

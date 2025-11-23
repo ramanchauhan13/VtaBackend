@@ -73,7 +73,6 @@ export const register = async (req, res) => {
 
 // ---------------- LOGIN ----------------
 export const login = async (req, res, next) => {
-  console.log("Login attempt");
   try {
     const { username, password } = req.body;
 
@@ -103,9 +102,7 @@ export const login = async (req, res, next) => {
         user,
       },
     });
-    console.log("Login successful for user:", user._id);
   } catch (err) {
-    console.log("Login error:", err);
     next(err);
   }
 };
