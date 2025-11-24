@@ -108,6 +108,7 @@ export const getServiceById = async (req, res) => {
 
 // Update service by ID
 export const updateService = async (req, res) => {
+  console.log("Updating service with data:", req.body);
   try {
     const updatedService = await Service.findByIdAndUpdate(
       req.params.id,

@@ -6,6 +6,7 @@ import cors from "cors";
 
 // Route Imports
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
 import requestRoutes from "./routes//requestRoutes.js";
 
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 
 // Route Usage
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/requests", requestRoutes);
 
