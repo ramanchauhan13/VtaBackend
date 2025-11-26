@@ -160,6 +160,13 @@ export const changePassword = async (req, res, next) => {
 
     await logAudit(user._id, "change_password", "User", user._id);
 
+    await createNotification(
+      user._id,
+      "Password Changed",
+      "In-App",
+      "Your password has been updated successfully."
+    );
+
     res.json({ success: true, message: "Password updated successfully" });
   } catch (err) {
     next(err);
