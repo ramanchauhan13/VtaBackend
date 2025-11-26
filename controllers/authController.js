@@ -14,7 +14,6 @@ const signToken = (payload) =>
 
 // ---------------- REGISTER ----------------
 export const register = async (req, res) => {
-  console.log("Registration attempt:", req.body);
   try {
     const { firstName, lastName, email, password, phone, role } = req.body;
 
@@ -73,7 +72,6 @@ export const register = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Registration error:", err);
     res
       .status(500)
       .json({ success: false, message: "Server Error", error: err.message });

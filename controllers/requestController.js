@@ -42,7 +42,6 @@ export const createRequest = async (req, res) => {
       data: request,
     });
   } catch (error) {
-    console.error("Create Request Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
