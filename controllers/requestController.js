@@ -52,25 +52,25 @@ export const createRequest = async (req, res) => {
 // --------------------------------------------------
 export const getRequestById = async (req, res) => {
   try {
+    console.log("User ID from auth middleware:", req.userId);
     const userId = req.userId; // logged-in user
 
-    const request = await Request.findOne({
+    const requests = await Request.find({
       user: userId,
-    })
-      .populate("user", "name email")
-      .populate("service", "name description")
+    }).populate("service", "name description")
       .lean();
 
-    if (!request) {
+    if (requests.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No request found or not authorized",
+        message: "No pending requests found",
       });
     }
 
+    console.log("Fetched Request:", requests);
     return res.status(200).json({
       success: true,
-      data: request,
+      data: requests,
     });
   } catch (error) {
     console.error("Get Request By ID Error:", error);
