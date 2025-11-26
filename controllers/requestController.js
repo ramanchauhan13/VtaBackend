@@ -99,3 +99,51 @@ export const getAllRequests = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+export const updateRequestStatus = async (req, res) => {
+  console.log(req.body);
+  try {
+    const { requestId } = req.params;
+    const { newStatus, rejectedReason, outputs } = req.body;
+    const adminId = req.userId;
+
+    // Validate status
+    const validStatuses = ["pending", "processing", "completed", "rejected", "cancelled"];
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).json({ message: "Invalid status value." });
+    }
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found." });
+    }
+
+    // Update status
+    request.status = newStatus;
+
+    // If rejected, store reason
+    if (newStatus === "rejected" && rejectedReason) {
+      request.rejectedReason = rejectedReason;
+    }
+
+    if (newStatus === "completed") {
+      request.completedAt = new Date();
+      if (outputs && Array.isArray(outputs)) {
+        request.outputs.push(...outputs.map(output => ({
+          label: output.label,
+          url: output.url,
+          uploadedAt: new Date(),
+          uploadedBy: adminId,
+        })));
+      }
+    }
+
+    await request.save();
+
+    res.status(200).json({ message: "Request status updated successfully.", request });
+  } catch (error) {
+    console.error("Error updating request status:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};

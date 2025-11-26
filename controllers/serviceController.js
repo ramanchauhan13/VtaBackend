@@ -5,10 +5,12 @@ export const createService = async (req, res) => {
   try {
     const {
       name,
+      imageURL,
       description,
       requiredDocuments,
       estimatedProcessingDays,
       formFields,
+      countries,
     } = req.body;
 
     console.log("Creating service with data:", req.body);
@@ -63,6 +65,8 @@ export const createService = async (req, res) => {
       requiredDocuments: requiredDocuments || [],
       estimatedProcessingDays: estimatedProcessingDays || 0,
       formFields: formFields || [],
+      imageURL: imageURL || "",
+      countries: countries || [],
     });
 
     const savedService = await newService.save();
