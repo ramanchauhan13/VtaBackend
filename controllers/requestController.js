@@ -24,15 +24,6 @@ export const createRequest = async (req, res) => {
       service: serviceId,
       formData: formData || {},
       documents: documents || [],
-      status: "pending", // from draft to pending
-      history: [
-        {
-          fromStatus: "draft",
-          toStatus: "pending",
-          changedBy: userId,
-          comment: "Request created",
-        },
-      ],
     });
 
     await request.save();
