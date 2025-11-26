@@ -1,6 +1,7 @@
 import Request from "../models/Request.js";
 import Service from "../models/Service.js";
 import User from "../models/User.js";
+import { createNotification } from "../utils/createNotification.js";
 
 // --------------------------------------------------
 // CREATE NEW REQUEST
@@ -27,6 +28,13 @@ export const createRequest = async (req, res) => {
     });
 
     await request.save();
+
+    await createNotification(
+          userId,
+          "Request Created",
+          "In-App",
+          `Your request for ${serviceExists.name} has been created successfully.`
+        );
 
     return res.status(201).json({
       success: true,
@@ -131,6 +139,13 @@ export const updateRequestStatus = async (req, res) => {
     }
 
     await request.save();
+
+    await createNotification(
+           request.user,
+          "Request Status Updated",
+          "In-App",
+          `Your request status has been updated to ${newStatus}.`
+        );
 
     res.status(200).json({ message: "Request status updated successfully.", request });
   } catch (error) {

@@ -1,8 +1,10 @@
 import Service from "../models/Service.js";
+import { createNotification } from "../utils/createNotification.js";
 
 // Create a new service
 export const createService = async (req, res) => {
   try {
+    const userId = req.userId; // from auth middleware
     const {
       name,
       imageURL,
@@ -70,6 +72,13 @@ export const createService = async (req, res) => {
     });
 
     const savedService = await newService.save();
+
+    await createNotification(
+          userId,
+          "Service Created",
+          "In-App",
+          "A new service has been created successfully."
+        );
 
     return res.status(201).json({
       success: true,
@@ -151,6 +160,7 @@ export const deleteService = async (req, res) => {
 
 export const toggleServiceStatus = async (req, res) => {
   try {
+    const userId = req.userId; // from auth middleware
     // Find service first
     const service = await Service.findById(req.params.id);
 
@@ -165,6 +175,13 @@ export const toggleServiceStatus = async (req, res) => {
 
     // Save updated document
     await service.save();
+
+    await createNotification(
+          userId,
+          "Service Status Changed",
+          "In-App",
+          `Service has been ${service.isActive ? "activated" : "deactivated"}.`
+        );
 
     res.status(200).json({
       success: true,
