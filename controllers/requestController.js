@@ -84,7 +84,7 @@ export const getAllRequests = async (req, res) => {
   try {
     const requests = await Request.find()
       .populate("user", "firstName lastName email phone")
-      .populate("service", "name description")
+      .populate("service", "name description").sort({ createdAt: -1 })
       .lean();
 
     return res.status(200).json({
