@@ -7,6 +7,7 @@ import { createNotification } from "../utils/createNotification.js";
 // CREATE NEW REQUEST
 // --------------------------------------------------
 export const createRequest = async (req, res) => {
+  console.log("Create Request Body:", req.body);
   try {
     const userId = req.userId; // from auth middleware
     const { serviceId, formData, documents } = req.body;
@@ -43,11 +44,11 @@ export const createRequest = async (req, res) => {
     await request.save();
 
     await createNotification(
-          userId,
-          "Request Created",
-          "In-App",
-          `Your request for ${serviceExists.name} has been created successfully.`
-        );
+      userId,
+      "Request Created",
+      "In-App",
+      `Your request for ${serviceExists.name} has been created successfully.`
+    );
 
     return res.status(201).json({
       success: true,
@@ -55,6 +56,7 @@ export const createRequest = async (req, res) => {
       data: request,
     });
   } catch (error) {
+    console.error("Create Request Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -69,7 +71,8 @@ export const getRequestById = async (req, res) => {
 
     const requests = await Request.find({
       user: userId,
-    }).populate("service", "name description").sort({ createdAt: -1 })
+    })
+      .populate("service", "name description")
       .lean();
 
     if (requests.length === 0) {
@@ -97,7 +100,8 @@ export const getAllRequests = async (req, res) => {
   try {
     const requests = await Request.find()
       .populate("user", "firstName lastName email phone")
-      .populate("service", "name description").sort({ createdAt: -1 })
+      .populate("service", "name description")
+      .sort({ createdAt: -1 })
       .lean();
 
     return res.status(200).json({
@@ -111,7 +115,6 @@ export const getAllRequests = async (req, res) => {
   }
 };
 
-
 export const updateRequestStatus = async (req, res) => {
   console.log(req.body);
   try {
@@ -120,7 +123,13 @@ export const updateRequestStatus = async (req, res) => {
     const adminId = req.userId;
 
     // Validate status
-    const validStatuses = ["pending", "processing", "completed", "rejected", "cancelled"];
+    const validStatuses = [
+      "pending",
+      "processing",
+      "completed",
+      "rejected",
+      "cancelled",
+    ];
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({ message: "Invalid status value." });
     }
@@ -141,25 +150,29 @@ export const updateRequestStatus = async (req, res) => {
     if (newStatus === "completed") {
       request.completedAt = new Date();
       if (outputs && Array.isArray(outputs)) {
-        request.outputs.push(...outputs.map(output => ({
-          label: output.label,
-          url: output.url,
-          uploadedAt: new Date(),
-          uploadedBy: adminId,
-        })));
+        request.outputs.push(
+          ...outputs.map((output) => ({
+            label: output.label,
+            url: output.url,
+            uploadedAt: new Date(),
+            uploadedBy: adminId,
+          }))
+        );
       }
     }
 
     await request.save();
 
     await createNotification(
-           request.user,
-          "Request Status Updated",
-          "In-App",
-          `Your request status has been updated to ${newStatus}.`
-        );
+      request.user,
+      "Request Status Updated",
+      "In-App",
+      `Your request status has been updated to ${newStatus}.`
+    );
 
-    res.status(200).json({ message: "Request status updated successfully.", request });
+    res
+      .status(200)
+      .json({ message: "Request status updated successfully.", request });
   } catch (error) {
     console.error("Error updating request status:", error);
     res.status(500).json({ message: "Internal server error." });
